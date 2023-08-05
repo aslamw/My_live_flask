@@ -1,33 +1,39 @@
 from flask import Flask
 from flask_cors import CORS
-from .models import db,ma
-from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
-from .routes import api_user
 
-import os
+
+import os, datetime
 
 load_dotenv()
 
-banco = os.getenv("BANCO")
-data_base = os.getenv("DATA_BASE")
+def create_app():
+    app = Flask(__name__)
 
-app = Flask(__name__)
-CORS(app)
+    CORS(app)
+    
+    
+    key = os.getenv("KEY")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"{banco}:///{data_base}"
-app.config["SQLALCHEMY_BINDS"] = {
-    "in_memory": "sqlite:///:memory:"
-}
+    app.config['JWT_SECRET_KEY'] = key
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1) 
+    
+    jwt = JWTManager(app)
 
-db.init_app(app)
-ma.init_app(app)
-mi = Migrate(app, db)
+    from .models import db,ma
+    from .routes import api_user, api_daily
+    
+    banco = os.getenv("BANCO")
+    data_base = os.getenv("DATA_BASE")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"{banco}:///{data_base}"
 
-#table
-from .models import User, Daily
+    db.init_app(app)
+    ma.init_app(app)
+    #table
+    from .models import User, Daily
 
-#CRUD
-#from .models import create_user,get_user
-
-app.register_blueprint(api_user)
+    app.register_blueprint(api_user)
+    app.register_blueprint(api_daily)
+    
+    return app, db

@@ -1,51 +1,74 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import exists, inspect
 from .table import User, user_shema, users_shema
 from .. import db
 
-def get_user(id):
-    
-    data = User.query.filter(User.id == id).one()
-    
-    if not data:
-        return False
-    
-    db.session.commit()
-    return user_shema.dump(data)
 
-def exist_user(data):
+class UserCRUD:
     
-    if len(list((key := data.key()))) > 1 or key not in ['email','id','phone']:
-        return False
-    
-    match key:
-        case 'id':
-            user = User.query.filter(User.id == data[key]).one()
-        case 'phone':
-            user = User.query.filter(User.phone == data[key]).one()
-        case 'email':
-            user = User.query.filter(User.email == data[key]).one()
-        case _:
+    @staticmethod
+    def get_email(data):
+        
+        user = User.query.filter(User.email == data).first()
+        
+        if user is None:
             return False
-    if not user:
-        return False
+        
+        return user
     
-    db.session.commit()
-    return True
+    @staticmethod
+    def get_phone(data):
+        
+        user = User.query.filter(User.phone == data).first()
+        
+        if user is None:
+            return False
+        
+        return user
+    
+    @staticmethod
+    def get_id(data):
+        
+        user = User.query.filter(User.id == data).first()
+        
+        if user is None:
+            return False
+        
+        return user
 
+    @staticmethod
+    def create_user(data):
+        data = User(
+            data["name"],
+            data["phone"],
+            data["email"],
+            data["password"]
+        )
 
-def create_user(data):
-    print(data)
-    data = User(
-        data["name"],
-        data["phone"],
-        data["email"],
-        data["password"]
-    )
+        db.session.add_all([data])
+        db.session.commit()
+
+        return user_shema.dump(data)
     
-    db.session.add_all([data])
-    db.session.commit()
+    @staticmethod
+    def update_user(data, user):     
+        if data.get("name")is not None:
+            user.name = data["name"]
+            
+        if data.get("email")is not None:
+            user.name = data["email"]
+            
+        if data.get("phone")is not None:
+            user.name = data["phone"]
+            
+        if data.get("password")is not None:
+            user.name = data["password"]
+            
+        db.session.commit()
+        
+        return user_shema.dump(user)
     
-    return user_shema.dump(data)
-    
-    
+    @staticmethod
+    def delete_user(user):
+        db.session.delete(user)
+        db.session.commit()
+        
+        
