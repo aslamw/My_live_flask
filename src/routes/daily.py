@@ -12,7 +12,7 @@ def register():
     data:dict = json.loads(request.data) 
     return ControllersDaily.register(id,data["text"])
 
-@api_daily.get('/all')
+@api_daily.get('/annotation/all')
 @jwt_required()
 def get_all():
     id = get_jwt_identity()
@@ -24,19 +24,19 @@ def get(id):
     id_user = get_jwt_identity()
     return ControllersDaily.get_annotation(id,id_user)
 
-@api_daily.put('/anotation/update')
+@api_daily.put('/annotation/update/<int:id>')
 @jwt_required()
-def update_user():
-    id = get_jwt_identity()
+def update_user(id):
+    id_user = get_jwt_identity()
     
     data = json.loads(request.data)
     
-    return 'ok'
+    return ControllersDaily.update(id_user, id, data['text'])
 
 
-@api_daily.delete('/annotation/delete')
+@api_daily.delete('/annotation/delete/<int:id>')
 @jwt_required()
-def delete_user():
-    id = get_jwt_identity()
+def delete_user(id):
+    id_user = get_jwt_identity()
     
-    return 'ok'
+    return ControllersDaily.delete(id, id_user)

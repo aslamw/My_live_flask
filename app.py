@@ -1,5 +1,5 @@
-from src import create_app
-app,db = create_app()
+from src import create_app,db
+app = create_app('daily.db')
 
 if __name__ == "__main__":
     with app.app_context():

@@ -31,7 +31,7 @@ class CRUDaily:
     
     def update(daily, text):
         
-        daily['annotation'] = text
+        daily.annotation = text
         
         db.session.commit()
         

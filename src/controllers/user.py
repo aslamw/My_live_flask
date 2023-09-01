@@ -48,7 +48,7 @@ class ControllerUser:
         user = UserCRUD.get_email(data.get("email"))
         
         if not user:
-            return jsonify({"message":"user not exist"})
+            return jsonify({"message":"user not exist"}),400
         
         if not check_password_hash(user.password, data["password"]):
             return jsonify('invalid password'),401
