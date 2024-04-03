@@ -4,7 +4,7 @@ from flask_marshmallow import Marshmallow
 db = SQLAlchemy()
 ma = Marshmallow()
 
-#User
+# User
 from .user.table import User, user_shema
 from .user.CRUD import UserCRUD
 
