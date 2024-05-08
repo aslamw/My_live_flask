@@ -4,7 +4,7 @@ from src import create_app,db
 from src.models import User
 import pytest
 
-api = create_app(':memory:')
+
 
 @pytest.fixture()
 def app():
@@ -13,9 +13,9 @@ def app():
     database, and then yields the application.
     """
     
-    api = create_app(':memory:')
+    app = create_app('testing')
     
-    with api.app_context():
+    with app.app_context():
         
         db.create_all()
         
@@ -25,7 +25,7 @@ def app():
         db.session.add(user)
         db.session.commit()
 
-        yield api
+        yield app
         
         db.session.remove()
         db.drop_all()
